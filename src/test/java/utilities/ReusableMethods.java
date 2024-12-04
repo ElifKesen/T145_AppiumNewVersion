@@ -8,10 +8,13 @@ import org.apache.commons.io.FileUtils;
 import org.openqa.selenium.Dimension;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.TakesScreenshot;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.PointerInput;
 import org.openqa.selenium.interactions.Sequence;
 import org.openqa.selenium.remote.RemoteWebDriver;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -103,6 +106,25 @@ public class ReusableMethods {
             throw new RuntimeException(e);
         }
     }
+
+    public static void screenShotElement(String text) throws IOException {
+        WebElement element = Driver.getAndroidDriver().findElement(xpath("//*[@text='"+text+"']"));
+        org.openqa.selenium.Point location = element.getLocation();
+        org.openqa.selenium.Dimension size = element.getSize();
+
+        // Ekran görüntüsünü alın ve belirli bölgeyi kırpın
+        File screenshot = Driver.getAndroidDriver().getScreenshotAs(OutputType.FILE);
+        BufferedImage fullImage = ImageIO.read(screenshot);
+        BufferedImage croppedImage = fullImage.getSubimage(location.getX(), location.getY(), size.getWidth(), size.getHeight());
+
+        // Kırpılmış görüntüyü kaydedin
+        File output = new File("kırpılmış_screenshot.png");
+        ImageIO.write(croppedImage, "png", output);
+
+        // Bağlantıyı kapat
+        Driver.quitAppiumDriver();
+    }
+
 
 
 
